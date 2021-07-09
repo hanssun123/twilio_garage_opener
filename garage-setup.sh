@@ -1,10 +1,12 @@
 #!/bin/bash
 
-cd ~/projects/door
-source env/bin/activate
+echo 'initd has run' > /home/pi/projects/door/initd_test.txt
 
+source /home/pi/projects/door/env/bin/activate
+
+killall garage.py
 fuser -k 5000/tcp #kills previous flask servers running on port 5000
-python garage.py &
+python /home/pi/projects/door/garage.py &
 killall ngrok #only allowed one ngrok tunnel at a time with free license
 sleep 3
 
@@ -13,9 +15,8 @@ while ! ping -q -w1 -c1 google.com &>/dev/null; do
   sleep 1
   echo 'Waiting for internet connection...'
 done
-./ngrok http 5000 -log=stdout > ngrok_output.txt &
-sleep 1
+/home/pi/projects/door/./ngrok http 5000 -log=stdout > /home/pi/projects/door/ngrok_output.txt &
+sleep 2
 
-python url_extractor.py
-
+python /home/pi/projects/door/url_extractor.py
 
